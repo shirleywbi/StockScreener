@@ -19,7 +19,6 @@ dir1 = 'C:\\'
 filePath = askopenfilename(filetypes = ftypes, initialdir = dir1, title = ttl)
 
 stocklist = pd.read_excel(filePath)
-stocklist = stocklist.head()
 
 exportList = pd.DataFrame(columns=['Stock', "RS_Rating", "50 Day MA", "150 Day Ma", "200 Day MA", "52 Week Low", "52 week High"])
 
