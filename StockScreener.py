@@ -9,9 +9,9 @@ import indicators as ind
 import time as time
 
 yf.pdr_override()
-start = dt.datetime(2017,12,1)
-now = dt.datetime.now()
 
+start = dt.datetime.now() - dt.timedelta(days=365)
+now = dt.datetime.now()
 checked_stocks = set()
 
 def screen_stocks():
@@ -55,7 +55,7 @@ def screen_on_mark_minervini(stock, index):
 		moving_average_200 = df["SMA_200"][-1]
 		low_of_52week = min(df["Adj Close"][-260:])
 		high_of_52week = max(df["Adj Close"][-260:])
-		RS_Rating = ind.get_relative_strength(stock, index)
+		RS_Rating = ind.get_relative_strength(stock, index, df)
 
 		try:
 			moving_average_200_20past = df["SMA_200"][-20]
@@ -85,4 +85,4 @@ def screen_on_mark_minervini(stock, index):
 start_time = time.time()
 screen_stocks()
 processing_time = time.time() - start_time
-print("Processed in: " + round(processing_time, 2) + "s")
+print("Processed in: " + str(round(processing_time, 2)) + "s")
