@@ -3,21 +3,24 @@ import pandas as pd
 from tkinter.filedialog import askopenfilename
 from pandas import ExcelWriter
 
-def get_stock_symbols():
-    stockpath = './StockSymbols/'
-    stockfiles = [
-        'NASDAQ.txt',
-        'NYSE.txt',
-        'TSX.txt'
-    ]
+def get_stock_symbols(index):
+    stockfiles = {
+		"NDAQ": 'NASDAQ.txt',	# NASDAQ
+		"NYA": 'NYSE.txt',		# NYSE
+		"XIU.TO": 'TSX.txt',	# TSX
+        "TSXV": "TSXV.txt"	# TSXV
+	}
+    if index not in stockfiles.keys():
+        print("Invalid index")
+        return []
 
-    stocks = set()
-    for stockfile in stockfiles:
-        with open(stockpath + stockfile, 'rt') as openedfile:
-            for line in openedfile:
-                stocks.add(line.split('\t')[0])
-        openedfile.close()
-    return list(stocks)
+    stockpath = './StockSymbols/' + stockfiles[index]
+    stocks = []
+    with open(stockpath, 'rt') as openedfile:
+        for line in openedfile:
+            stocks.append(line.split('\t')[0])
+    openedfile.close()
+    return stocks
 
 def get_spreadsheet_rows_with_dialog():
 	ftypes = [(".xlsm","*.xlsx",".xls")] # can accept these dialog files

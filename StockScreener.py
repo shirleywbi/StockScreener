@@ -5,19 +5,28 @@ from pandas_datareader import data as pdr
 import yfinance as yf
 
 import fileOperator as fo
+import indicators as ind
+import time as time
 
 yf.pdr_override()
 start = dt.datetime(2017,12,1)
 now = dt.datetime.now()
 
+checked_stocks = set()
+
 def screen_stocks():
-	stocklist = fo.get_stock_symbols()[:100]
+	indexes = ["NDAQ", "NYA", "XIU.TO"]
 	exportList = pd.DataFrame(columns=['Stock', "RS_Rating", "50 Day MA", "150 Day Ma", "200 Day MA", "52 Week Low", "52 week High"])
 
-	for stock in stocklist:
-		result = screen_on_mark_minervini(stock)
-		if result != None:
-			exportList = exportList.append(result, ignore_index=True)
+	for index in indexes:
+		stocklist = fo.get_stock_symbols(index)[:30]
+
+		for stock in stocklist:
+			if stock not in checked_stocks:
+				result = screen_on_mark_minervini(stock, index)
+				if result != None:
+					exportList = exportList.append(result, ignore_index=True)
+				checked_stocks.add(stock)
 
 	fo.write_file("ScreenOutput.xlsx", exportList)
 
@@ -32,9 +41,7 @@ Mark Minervini's Trend Template:
 (7) Current Price is within 25% of 52 week high
 (8) IBD RS rating > 70 and the higher the better
 """
-def screen_on_mark_minervini(stock):
-	RS_Rating = "null" #TODO: Use API to get RSI or to calculate
-
+def screen_on_mark_minervini(stock, index):
 	try:
 		df = pdr.get_data_yahoo(stock, start, now)
 
@@ -48,6 +55,7 @@ def screen_on_mark_minervini(stock):
 		moving_average_200 = df["SMA_200"][-1]
 		low_of_52week = min(df["Adj Close"][-260:])
 		high_of_52week = max(df["Adj Close"][-260:])
+		RS_Rating = ind.get_relative_strength(stock, index)
 
 		try:
 			moving_average_200_20past = df["SMA_200"][-20]
@@ -62,7 +70,7 @@ def screen_on_mark_minervini(stock):
 			currentClose > moving_average_50,
 			currentClose > 1.3 * low_of_52week,
 			currentClose > 0.75 * high_of_52week,
-			# RS_Rating > 70,
+			RS_Rating > 70,
 		]
 
 		conditions_met = functools.reduce(lambda result, cond : result and cond, conditions)
@@ -74,4 +82,7 @@ def screen_on_mark_minervini(stock):
 	except Exception:
 		print("No data on " + stock)
 
+start_time = time.time()
 screen_stocks()
+processing_time = time.time() - start_time
+print("Processed in: " + round(processing_time, 2) + "s")
