@@ -13,13 +13,14 @@ yf.pdr_override()
 start = dt.datetime.now() - dt.timedelta(days=365)
 now = dt.datetime.now()
 checked_stocks = set()
+missing_stocks = set()
 
 def screen_stocks():
 	indexes = ["NDAQ", "NYA", "XIU.TO"]
 	exportList = pd.DataFrame(columns=['Stock', "RS_Rating", "50 Day MA", "150 Day Ma", "200 Day MA", "52 Week Low", "52 week High"])
 
 	for index in indexes:
-		stocklist = fo.get_stock_symbols(index)[:30]
+		stocklist = fo.get_stock_symbols(index)
 
 		for stock in stocklist:
 			if stock not in checked_stocks:
@@ -27,6 +28,11 @@ def screen_stocks():
 				if result != None:
 					exportList = exportList.append(result, ignore_index=True)
 				checked_stocks.add(stock)
+
+		# symbol file cleanup
+		if len(missing_stocks) != 0:
+			fo.remove_missing_stocks(missing_stocks, index)
+			missing_stocks = set()
 
 	fo.write_file("ScreenOutput.xlsx", exportList)
 
@@ -81,6 +87,7 @@ def screen_on_mark_minervini(stock, index):
 		return None
 	except Exception:
 		print("No data on " + stock)
+		missing_stocks.add(stock)
 
 start_time = time.time()
 screen_stocks()

@@ -8,7 +8,7 @@ stockfiles = {
 	"NDAQ": 'NASDAQ.txt',	# NASDAQ
 	"NYA": 'NYSE.txt',		# NYSE
 	"XIU.TO": 'TSX.txt',	# TSX
-	"TSXV": "TSXV.txt"	# TSXV
+	"TSXV": "TSXV.txt"		# TSXV
 }
 
 def get_stock_symbols(index):
@@ -38,7 +38,8 @@ def write_file(filename, content):
 	content.to_excel(writer, "Sheet1")
 	writer.save()
 
-def remove_missing_stocks(missing, filename):
+def remove_missing_stocks(missing, index):
+	filename = stockfiles[index]
 	with open(stockdir + filename) as oldfile, open(stockdir + "new" + filename, 'w') as newfile:
 		for line in oldfile:
 			if not any(value in line for value in missing):
