@@ -11,11 +11,11 @@ start = dt.datetime(2017,12,1)
 now = dt.datetime.now()
 
 def screen_stocks():
-	stocklist = fo.get_spreadsheet_rows_with_dialog().head()
+	stocklist = fo.get_stock_symbols()[:100]
 	exportList = pd.DataFrame(columns=['Stock', "RS_Rating", "50 Day MA", "150 Day Ma", "200 Day MA", "52 Week Low", "52 week High"])
 
-	for i in stocklist.index:
-		result = screen_on_mark_minervini(str(stocklist["Symbol"][i]))
+	for stock in stocklist:
+		result = screen_on_mark_minervini(stock)
 		if result != None:
 			exportList = exportList.append(result, ignore_index=True)
 
@@ -53,8 +53,6 @@ def screen_on_mark_minervini(stock):
 			moving_average_200_20past = df["SMA_200"][-20]
 		except Exception:
 			moving_average_200_20past = 0
-
-		print("Checking " + stock + ".....")
 
 		conditions = [
 			currentClose > moving_average_150 and currentClose > moving_average_200,

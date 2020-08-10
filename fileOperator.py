@@ -17,7 +17,7 @@ def get_stock_symbols():
             for line in openedfile:
                 stocks.add(line.split('\t')[0])
         openedfile.close()
-    return stocks
+    return list(stocks)
 
 def get_spreadsheet_rows_with_dialog():
 	ftypes = [(".xlsm","*.xlsx",".xls")] # can accept these dialog files
