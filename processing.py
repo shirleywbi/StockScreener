@@ -12,6 +12,8 @@ def remove_missing_stocks_from_files():
     indexes = ["NDAQ", "NYA", "XIU.TO"]
     checked_stocks = set()
     missing_stocks = set()
+
+    start = dt.datetime.now() - dt.timedelta(days=7)
     now = dt.datetime.now()
 
     for index in indexes:
@@ -20,7 +22,7 @@ def remove_missing_stocks_from_files():
         for stock in stocklist:
             if stock not in checked_stocks:
                 try:
-                    df = pdr.get_data_yahoo(stock, now, now)
+                    df = pdr.get_data_yahoo(stock, start, now)
                     if df.empty:
                         missing_stocks.add(stock)
                 except Exception:
