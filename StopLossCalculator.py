@@ -5,10 +5,10 @@ Stop Loss Calculator:
 * (3) Moving Average Method: gets long-term moving average price and get value slightly below
 """
 import datetime as dt
-import pandas as pd
 from pandas_datareader import data as pdr
 import yfinance as yf
 from yahoo_fin import stock_info as si
+from indicators import get_average_true_range, get_support_level
 
 yf.pdr_override()
 
@@ -16,9 +16,8 @@ def percentage_method(stock):
     price = si.get_live_price(stock)
     return round(price * 0.94, 2)
 
-def support_method():
-    # TODO To be implemented
-    None
+def support_method(stock):
+    return get_support_level(stock, 1) - get_average_true_range(stock)
 
 # Select a trend based on whether you're riding a short, medium, long-term trend
 def moving_average_method(stock, trend = "LONG"):
@@ -34,7 +33,7 @@ def moving_average_method(stock, trend = "LONG"):
         df = pdr.get_data_yahoo(stock, start, now)
         df["SMA"] = round(df["Adj Close"].rolling(window=trends[trend]).mean(), 2)
         ma = df["SMA"][-1]
-        return ma * 0.995
+        return ma - get_average_true_range(stock)
     except Exception as e:
         print("Error calculating stop loss with moving average for " + stock)
         print(e)
