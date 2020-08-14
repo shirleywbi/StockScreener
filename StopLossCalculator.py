@@ -13,11 +13,19 @@ from indicators import get_average_true_range, get_support_level
 yf.pdr_override()
 
 def percentage_method(stock):
-    price = si.get_live_price(stock)
-    return round(price * 0.94, 2)
+    try:
+        price = si.get_live_price(stock)
+        return round(price * 0.94, 2)
+    except Exception as e:
+        print("Error calculating stop loss with percentage for " + stock)
+        print(e)
 
 def support_method(stock):
-    return get_support_level(stock, 1) - get_average_true_range(stock)
+    try:
+        return get_support_level(stock, 1) - get_average_true_range(stock)
+    except Exception as e:
+        print("Error calculating stop loss with support method for " + stock)
+        print(e)
 
 # Select a trend based on whether you're riding a short, medium, long-term trend
 def moving_average_method(stock, trend = "LONG"):
