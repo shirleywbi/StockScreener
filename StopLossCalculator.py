@@ -22,7 +22,7 @@ def percentage_method(stock):
 
 def support_method(stock):
     try:
-        return get_support_level(stock, 1) - get_average_true_range(stock)
+        return round(get_support_level(stock, 1) - get_average_true_range(stock), 2)
     except Exception as e:
         print("Error calculating stop loss with support method for " + stock)
         print(e)
@@ -41,7 +41,7 @@ def moving_average_method(stock, trend = "LONG"):
         df = pdr.get_data_yahoo(stock, start, now)
         df["SMA"] = round(df["Adj Close"].rolling(window=trends[trend]).mean(), 2)
         ma = df["SMA"][-1]
-        return ma - get_average_true_range(stock)
+        return round(ma - get_average_true_range(stock), 2)
     except Exception as e:
         print("Error calculating stop loss with moving average for " + stock)
         print(e)
