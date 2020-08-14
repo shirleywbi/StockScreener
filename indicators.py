@@ -32,3 +32,54 @@ def get_relative_strength(stock, index, data = None):
         index_change_dict[index] = index_change
 
     return round(stock_change/index_change * 100, 2)
+
+"""
+Average True Range (ATR) is a technical indicator that measures market volatility,
+typically derived from a moving average of a series of ATRs.
+The maximum of:
+- The current high less the current low
+- The absolute value of the current high less the previous close
+- The absolute value of the current low less the previous close
+"""
+def get_average_true_range(stock):
+    sum = 0
+    days = 14
+    df = pdr.get_data_yahoo(stock, start, now)
+    for i in range(1, days):
+        currHigh = df["High"][-i]
+        currLow = df["Low"][-i]
+        prevClose = df["Adj Close"][-i-1]
+        sum += max(currHigh - currLow, abs(currHigh - prevClose), abs(currLow - prevClose))
+    return round(sum/days, 2)
+
+def get_resistance_level(stock, level):
+    df = pdr.get_data_yahoo(stock, start, now)
+
+    high = df["High"][-1]
+    low = df["Low"][-1]
+    close = df["Adj Close"][-1]
+
+    pivot = (high + low + close)/3
+    switch = {
+        1: (2 * pivot) - low,
+        2: pivot - low + high,
+        3: high + 2 * (pivot - low),
+        4: high + 3 * (pivot - low)
+    }
+    return switch.get(level)
+
+def get_support_level(stock, level):
+    df = pdr.get_data_yahoo(stock, start, now)
+
+    high = df["High"][-1]
+    low = df["Low"][-1]
+    close = df["Adj Close"][-1]
+
+    pivot = (high + low + close)/3
+    switch = {
+        1: 2 * pivot - high,
+        2: pivot - high + low,
+        3: low - 2 * (high - pivot),
+        4: low - 3 * (high - pivot)
+    }
+    return switch.get(level)
